@@ -4,27 +4,39 @@
 <style>
     .home-container{
         display: grid;
-        grid-template-columns: 1fr 3fr;
+        grid-template-columns: 1fr 3fr 1fr;
     }
 </style>
 <div class="home-container">
     <div class="side-bar">
         <h2>Browse topics</h2>
+        <h3><a href="{% url 'home' %}">All</a></h3>
         {% for topic in topics %}
             <h3><a href="{% url 'home' %}?q={{topic.name}}">{{topic}}</a></h3>
         {% endfor %}
     </div>
     
     <div class="">
-        <h1>this is my home page</h1>
+        <h4>{{room_count}} rooms available</h4>
         <a href="{% url 'create_room' %}">create room</a>
         {% for room in rooms %}
         <hr>
-        <a href="{% url 'update_room' room.id %}">Edit</a>
-        <a href="{% url 'delete_room' room.id %}">Delete</a>
+        {% if request.user == room.host %}
+            <a href="{% url 'update_room' room.id %}">Edit</a>
+            <a href="{% url 'delete_room' room.id %}">Delete</a>
+        {% endif %}
         <span>@{{room.host}}</span>
         <h3>{{room.id}}: <a href="{% url 'room' room.id %}">----{{room.name}}</a></h3>
         <p><small>{{room.topic}}</small></p>
+        {% endfor %}
+    </div>
+    <div class="">
+        <h3>Recent Activities</h3>
+        <hr>
+        {% for room_msg in room_messages %}
+            <p style="font-weight: bold;">@{{room_msg.user}} {{room_msg.updated_at|timesince}}</p>
+            <small>replied to: {{room_msg.room}}</small>
+            <p style="background: lightslategrey;;">{{room_msg.body}}</p>
         {% endfor %}
     </div>
 </div>

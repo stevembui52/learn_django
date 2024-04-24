@@ -1,6 +1,48 @@
 {% extends 'base.html' %}
 
 {% block body%}
-    <h1>Rooms</h1>
-    <!-- <h4>{{room.name}}</h4> -->
+    <style>
+        .room-container{
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+        }
+    </style>
+    <div class="room-container">
+        <div class="room-content">
+            <h1>Rooms</h1>
+            <!-- <small>{{room.host}}</small> -->
+            <h4>{{room.name}}</h4>
+            <p>{{room.description}}</p>
+
+            <div class="content-wrapper">
+                <h2>Conversations</h2>
+                <hr>
+                
+                {% for room_msg in room_messages %}
+                {% if request.user == room_msg.user %}
+                    <a href="{% url 'delete_message' room_msg.id %}">Delete</a>
+                {% endif %}
+                    <h3>{{room_msg.user}}: {{room_msg.updated_at|timesince}} ago</h3>
+                    <p>{{room_msg.body}}</p>
+
+                    <hr>
+                {% endfor %}
+            </div>
+            <!-- {% if request.user.is_authenticated %} -->
+            <div class="content-form">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="msg_body" placeholder="Write your message here">
+                </form>
+            </div>
+            <!-- {% endif %} -->
+        </div>
+        <div class="room-participant">
+            <h3>Participant</h3>
+            <hr>
+            {% for participant in participants %}
+                <p>@{{participant.username}}</p>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
